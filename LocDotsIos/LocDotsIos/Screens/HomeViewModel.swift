@@ -7,47 +7,77 @@
 //
 
 import SwiftUI
+import Combine
 import LocDotsShared
 
+@MainActor
 class HomeViewModel: ObservableObject {
     enum HomeScreenState: Equatable {
         case idle
         case loading
         case error(String)
         case success([Dot])
+
+        static func == (lhs: HomeScreenState, rhs: HomeScreenState) -> Bool {
+            switch (lhs, rhs) {
+            case (.idle, .idle): return true
+            case (.loading, .loading): return true
+            case (.error(let lMessage), .error(let rMessage)): return lMessage == rMessage
+            case (.success(let lDots), .success(let rDots)): return lDots == rDots
+            default: return false
+            }
+        }
     }
 
     @Published var dots: HomeScreenState = .idle
     @Published var sortType: DotSort = .postDate
+    
     private var cancellables = Set<AnyCancellable>()
+    private var fetchTask: Task<Void, Never>? = nil
+    
+    private var getAllDotsUseCase: GetAllDotsUseCase {
+        UseCaseProvider.shared.getAllDotsUseCase
+    }
 
     init() {
         $sortType
-            .sink { [weak self] _ in
-                self?.getItems()
-            }
+            .dropFirst()
+            .sink { [weak self] _ in self?.getItems() }
             .store(in: &cancellables)
+        
         getItems()
     }
 
     func getItems() {
+        fetchTask?.cancel()
         dots = .loading
-        DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) { [weak self] in
-            guard let self = self else { return }
-            let sampleDots: [Dot] = [
-                Dot(title: "First Dot", content: "This is the content of the first dot."),
-                Dot(title: "Second Dot", content: "Another dot with some interesting content."),
-                Dot(title: "Third Dot", content: "The last dot for demonstration purposes.")
-            ]
-            let sortedDots = sampleDots.sorted { d1, d2 in
-                switch self.sortType {
-                case .postDate:
-                    return d1.title < d2.title
-                case .name:
-                    return d1.title < d2.title
-                }
+        
+        fetchTask = Task {
+            do {
+                let result = try await getAllDotsUseCase.invoke(
+                    latitude: 40.741895,
+                    longitude: -73.989308,
+                    sortingType: sortType
+                )
+                
+                result
+                    .onSuccess { data in
+                        if let dots = data as? [Dot] {
+                            self.dots = .success(dots)
+                        }
+                    }
+                    .onFailure { error in
+                        self.dots = .error(error.message)
+                    }
+            } catch is CancellationError {
+                self.dots = .idle
+            } catch {
+                self.dots = .error(error.localizedDescription)
             }
-            self.dots = .success(sortedDots)
         }
+    }
+    
+    deinit {
+        fetchTask?.cancel()
     }
 }

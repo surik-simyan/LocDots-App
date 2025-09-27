@@ -5,12 +5,14 @@ import LocDotsShared
 struct iOSApp: App {
     
     init() {
-        UISegmentedControl.appearance().backgroundColor = UIColor(Color(hex: ColorsKt.GrayHex))
+        UISegmentedControl.appearance().backgroundColor = UIColorKt.Gray
+        HelperKt.doInitKoin()
     }
     
 	var body: some Scene {
 		WindowGroup {
             HomeView()
+                .ignoresSafeArea(.all)
 		}
 	}
 }

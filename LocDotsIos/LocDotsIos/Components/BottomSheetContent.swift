@@ -12,13 +12,13 @@ import LocDotsShared
 struct BottomSheetContent: View {
     @Binding var selectedSortType: DotSort
     var onApply: () -> Void
-    let sortOptions: [DotSort] = [DotSort.postDistance, DotSort.postDate]
+    let sortOptions: [DotSort] = [.postDistance, .postDate]
     
     var body: some View {
         VStack(spacing: 16) {
             Text("Sort by")
                 .font(.system(size: 24, weight: .bold))
-                .foregroundColor(Color(hex: ColorsKt.PlatinumHex))
+                .foregroundColor(Color(UIColorKt.Platinum))
                 .frame(maxWidth: .infinity, alignment: .center)
                 .padding(.vertical, 8)
             
@@ -29,7 +29,7 @@ struct BottomSheetContent: View {
                 }
             }
             .pickerStyle(.segmented)
-            .tint(Color(hex: ColorsKt.PlatinumHex))
+            .tint(Color(UIColorKt.Platinum))
             
         
             Button(action: {
@@ -39,13 +39,12 @@ struct BottomSheetContent: View {
                     .fontWeight(.bold)
                     .frame(maxWidth: .infinity)
                     .padding(.vertical, 12)
-                    .background(Color(hex: ColorsKt.PlatinumHex))
-                    .foregroundColor(Color(hex: ColorsKt.EerieBlackHex))
+                    .background(Color(UIColorKt.Platinum))
+                    .foregroundColor(Color(UIColorKt.EerieBlack))
                     .cornerRadius(8)
             }
         }
         .padding(16)
-        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
-        .background(Color(hex: ColorsKt.EerieBlackHex).ignoresSafeArea())
+        .background(Color(UIColorKt.EerieBlack))
     }
 }

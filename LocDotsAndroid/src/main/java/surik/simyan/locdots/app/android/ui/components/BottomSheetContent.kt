@@ -15,7 +15,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
@@ -24,12 +23,11 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import surik.simyan.locdots.app.android.toColor
 import surik.simyan.locdots.app.shared.data.DotSort
-import surik.simyan.locdots.app.shared.ui.EerieBlackHex
-import surik.simyan.locdots.app.shared.ui.GrayHex
-import surik.simyan.locdots.app.shared.ui.JetHex
-import surik.simyan.locdots.app.shared.ui.PlatinumHex
+import surik.simyan.locdots.app.shared.ui.EerieBlack
+import surik.simyan.locdots.app.shared.ui.Gray
+import surik.simyan.locdots.app.shared.ui.Jet
+import surik.simyan.locdots.app.shared.ui.Platinum
 
 @Composable
 fun BottomSheetContent(clickHandler: (DotSort) -> Unit) {
@@ -44,7 +42,7 @@ fun BottomSheetContent(clickHandler: (DotSort) -> Unit) {
             "Sort by",
             modifier = Modifier
                 .fillMaxWidth(),
-            color = PlatinumHex.toColor(),
+            color = Platinum,
             textAlign = TextAlign.Center,
             fontSize = 24.sp,
             fontWeight = FontWeight.Bold
@@ -59,11 +57,11 @@ fun BottomSheetContent(clickHandler: (DotSort) -> Unit) {
                     onClick = { selectedIndex = index },
                     selected = index == selectedIndex,
                     colors = SegmentedButtonDefaults.colors(
-                        activeContainerColor = JetHex.toColor(),
-                        activeContentColor = PlatinumHex.toColor(),
+                        activeContainerColor = Jet,
+                        activeContentColor = Platinum,
                         activeBorderColor = Color.Transparent,
-                        inactiveContainerColor = GrayHex.toColor(),
-                        inactiveContentColor = PlatinumHex.toColor(),
+                        inactiveContainerColor = Gray,
+                        inactiveContentColor = Platinum,
                         inactiveBorderColor = Color.Transparent
                     )
                 ) {
@@ -75,14 +73,14 @@ fun BottomSheetContent(clickHandler: (DotSort) -> Unit) {
         Button(
             onClick = { clickHandler(options[selectedIndex]) },
             colors = ButtonDefaults.buttonColors(
-                containerColor = PlatinumHex.toColor()
+                containerColor = Platinum
             )
         ) {
             Text(
                 "Apply",
                 modifier = Modifier
                     .fillMaxWidth(),
-                color = EerieBlackHex.toColor(),
+                color = EerieBlack,
                 textAlign = TextAlign.Center,
                 fontWeight = FontWeight.Bold
             )

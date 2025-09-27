@@ -15,24 +15,24 @@ struct MessageCard: View {
         VStack(alignment: .leading, spacing: 0) {
             Text(dot.message)
                 .padding(16)
-                .foregroundColor(Color(hex: LocDotsShared.ColorsKt.PlatinumHex))
+                .foregroundColor(Color(UIColorKt.Platinum))
                 .multilineTextAlignment(.leading)
                 .frame(maxWidth: .infinity, alignment: .leading)
             
             Divider()
                 .frame(height: 1)
-                .overlay(Color(hex: ColorsKt.JetHex))
+                .overlay(Color(UIColorKt.Jet))
             
             HStack {
-                Text(dot.date)
-                    .foregroundColor(Color(hex: ColorsKt.PlatinumHex))
+                Text(dot.formattedDate)
+                    .foregroundColor(Color(UIColorKt.Platinum))
                     .multilineTextAlignment(.leading)
                     .frame(maxWidth: .infinity, alignment: .leading)
                 
                 Spacer()
                 
                 Text("16 km")
-                    .foregroundColor(Color(hex: ColorsKt.PlatinumHex))
+                    .foregroundColor(Color(UIColorKt.Platinum))
                     .multilineTextAlignment(.trailing)
                     .frame(maxWidth: .infinity, alignment: .trailing)
             }
@@ -42,7 +42,7 @@ struct MessageCard: View {
         .frame(minHeight: 100, alignment: .top)
         .background(
             RoundedRectangle(cornerRadius: 8)
-                .fill(Color(hex: ColorsKt.DavyGrayHex))
+                .fill(Color(UIColorKt.DavyGray))
         )
     }
 }

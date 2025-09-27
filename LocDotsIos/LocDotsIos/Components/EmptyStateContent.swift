@@ -14,17 +14,17 @@ struct EmptyStateContent: View {
     var body: some View {
         VStack {
             Text("No dots nearby, be the first one")
-                .foregroundColor(Color(hex: ColorsKt.PlatinumHex))
+                .foregroundColor(Color(UIColorKt.Platinum))
                 .font(.title2)
                 .padding()
             Spacer()
                 .frame(height: 5)
             Button("Create dot", action: onCreateDot)
                 .buttonStyle(.borderedProminent)
-                .tint(Color(hex: ColorsKt.PlatinumHex))
-                .foregroundColor(Color(hex: ColorsKt.EerieBlackHex))
+                .tint(Color(UIColorKt.Platinum))
+                .foregroundColor(Color(UIColorKt.EerieBlack))
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .background(Color(hex: ColorsKt.GrayHex))
+        .background(Color(UIColorKt.Gray))
     }
 }

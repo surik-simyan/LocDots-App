@@ -4,9 +4,9 @@ import kotlinx.datetime.LocalDateTime
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class Dot(
+data class DotDto(
     val id: String,
     val message: String,
-    val location: Coordinates,
+    val coordinates: Coordinates,
     val dateTime: LocalDateTime,
 )

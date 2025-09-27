@@ -6,10 +6,16 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import surik.simyan.locdots.app.shared.network.DotsApi
+import surik.simyan.locdots.app.android.toMessage
+import surik.simyan.locdots.app.android.ui.screens.HomeScreenViewModel.HomeScreenState
+import surik.simyan.locdots.app.shared.base.onFailure
+import surik.simyan.locdots.app.shared.base.onSuccess
+import surik.simyan.locdots.app.shared.domain.usecases.CreateDotUseCase
+import surik.simyan.locdots.app.shared.domain.usecases.GetAllDotsUseCase
+import surik.simyan.locdots.app.shared.network.DotsApiService
 
 class MessageScreenViewModel(
-    private val dotsApi: DotsApi
+    private val createDot: CreateDotUseCase
 ) : ViewModel() {
 
     private val _uploadState: MutableStateFlow<MessageScreenState> =
@@ -29,8 +35,13 @@ class MessageScreenViewModel(
     fun onSendClick(message: String) {
         viewModelScope.launch {
             _uploadState.update { MessageScreenState.Loading }
-            dotsApi.createNewDot()
-
+            createDot.invoke(message, 40.741895, -73.989308)
+                .onSuccess {
+                    _uploadState.update { MessageScreenState.Success }
+                }
+                .onFailure { error ->
+                    _uploadState.update { MessageScreenState.Error(error.message) }
+                }
         }
 //        viewModelScope.launch {
 //            _uploadState.update { MessageScreenState.Loading }
@@ -68,4 +79,6 @@ class MessageScreenViewModel(
 //            }
 //        }
     }
+
+    fun resetState() = _uploadState.update { MessageScreenState.Idle }
 }

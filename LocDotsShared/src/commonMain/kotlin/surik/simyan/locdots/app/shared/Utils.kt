@@ -1,11 +1,14 @@
 package surik.simyan.locdots.app.shared
 
-import kotlinx.datetime.Clock
 import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toInstant
-import kotlin.math.*
+import kotlin.time.Clock
+import kotlin.time.ExperimentalTime
 
+
+
+@OptIn(ExperimentalTime::class)
 fun getDateFromDateTime(dateTime: LocalDateTime): String {
     val now = Clock.System.now()
     val past = dateTime.toInstant(TimeZone.UTC)

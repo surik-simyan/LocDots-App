@@ -2,20 +2,22 @@ package surik.simyan.locdots.app.android.ui.screens
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import surik.simyan.locdots.app.shared.data.Dot
+import surik.simyan.locdots.app.shared.base.onFailure
+import surik.simyan.locdots.app.shared.base.onSuccess
 import surik.simyan.locdots.app.shared.data.DotSort
-import surik.simyan.locdots.app.shared.network.DotsApi
+import surik.simyan.locdots.app.shared.domain.model.Dot
+import surik.simyan.locdots.app.shared.domain.usecases.GetAllDotsUseCase
 
 class HomeScreenViewModel(
-    private val dotsApi: DotsApi
+    private val getAllDots: GetAllDotsUseCase
 ) : ViewModel() {
 
-    private val _homeScreenState: MutableStateFlow<HomeScreenState> = MutableStateFlow(HomeScreenState.Idle)
+    private val _homeScreenState: MutableStateFlow<HomeScreenState> =
+        MutableStateFlow(HomeScreenState.Idle)
     val homeScreenState = _homeScreenState.asStateFlow()
 
     //
@@ -37,10 +39,13 @@ class HomeScreenViewModel(
     fun getItems() {
         viewModelScope.launch {
             _homeScreenState.update { HomeScreenState.Loading }
-            delay(5000)
-            dotsApi.getAllDots(40.741895, -73.989308, sortType.value).collect { dots ->
-                _homeScreenState.update { HomeScreenState.Success(dots) }
-            }
+            getAllDots.invoke(40.741895, -73.989308, sortType.value)
+                .onSuccess { dots ->
+                    _homeScreenState.update { HomeScreenState.Success(dots) }
+                }
+                .onFailure { error ->
+                    _homeScreenState.update { HomeScreenState.Error(error.message) }
+                }
 //            when (val location = geolocator.current(Priority.HighAccuracy)) {
 //                is GeolocatorResult.Success -> {
 //                    try {

@@ -15,28 +15,50 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import surik.simyan.locdots.app.android.toColor
-import surik.simyan.locdots.app.shared.ui.EerieBlackHex
-import surik.simyan.locdots.app.shared.ui.GrayHex
-import surik.simyan.locdots.app.shared.ui.PlatinumHex
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import org.koin.androidx.compose.koinViewModel
+import surik.simyan.locdots.app.android.ui.components.LoadingDialog
+import surik.simyan.locdots.app.android.ui.components.ThemedDialog
+import surik.simyan.locdots.app.shared.data.DotSort
+import surik.simyan.locdots.app.shared.domain.model.Dot
+import surik.simyan.locdots.app.shared.ui.EerieBlack
+import surik.simyan.locdots.app.shared.ui.Gray
+import surik.simyan.locdots.app.shared.ui.Platinum
+
+@Composable
+fun MessageScreen(
+    onNavigateUp: () -> Unit,
+    viewModel: MessageScreenViewModel = koinViewModel()
+) {
+    val uploadState by viewModel.uploadState.collectAsStateWithLifecycle()
+
+    MessageScreenContent(
+        state = uploadState,
+        onNavigateUp = onNavigateUp,
+        onSendClick = viewModel::onSendClick,
+        resetState = viewModel::resetState
+    )
+}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MessageScreen(
-    onNavigateUp: () -> Unit
+private fun MessageScreenContent(
+    state: MessageScreenViewModel.MessageScreenState,
+    onNavigateUp: () -> Unit,
+    onSendClick: (message: String) -> Unit,
+    resetState: () -> Unit,
 ) {
-//    val viewModel = koinViewModel<MessageScreenViewModel>()
-//    val uploadState by viewModel.uploadState.collectAsState()
     val maxChar = 500
     var text by rememberSaveable { mutableStateOf("") }
     Scaffold(
         topBar = {
             CenterAlignedTopAppBar(
                 colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = EerieBlackHex.toColor(),
-                    titleContentColor = PlatinumHex.toColor(),
+                    containerColor = EerieBlack,
+                    titleContentColor = Platinum,
                 ),
                 title = {
                     Text(
@@ -49,7 +71,7 @@ fun MessageScreen(
                     IconButton(
                         onClick = { onNavigateUp() },
                         colors = IconButtonDefaults.iconButtonColors(
-                            contentColor = PlatinumHex.toColor()
+                            contentColor = Platinum
                         )
                     ) {
                         Icon(
@@ -61,10 +83,10 @@ fun MessageScreen(
                 actions = {
                     IconButton(
                         onClick = {
-//                            viewModel.onSendClick(text)
+                            onSendClick(text)
                         },
                         colors = IconButtonDefaults.iconButtonColors(
-                            contentColor = PlatinumHex.toColor()
+                            contentColor = Platinum
                         )
                     ) {
                         Icon(
@@ -78,7 +100,7 @@ fun MessageScreen(
     ) { innerPadding ->
         Box(
             modifier = Modifier
-                .background(GrayHex.toColor())
+                .background(Gray)
                 .fillMaxSize()
                 .padding(innerPadding)
         ) {
@@ -95,31 +117,41 @@ fun MessageScreen(
                     focusedIndicatorColor = Color.Transparent,
                     unfocusedIndicatorColor = Color.Transparent,
                     disabledIndicatorColor = Color.Transparent,
-                    cursorColor = EerieBlackHex.toColor(),
-                    focusedContainerColor = GrayHex.toColor(),
-                    unfocusedContainerColor = GrayHex.toColor(),
-                    focusedTextColor = PlatinumHex.toColor(),
-                    unfocusedTextColor = PlatinumHex.toColor()
+                    cursorColor = EerieBlack,
+                    focusedContainerColor = Gray,
+                    unfocusedContainerColor = Gray,
+                    focusedTextColor = Platinum,
+                    unfocusedTextColor = Platinum
                 ),
             )
         }
-//        when (val result = uploadState) {
-//            MessageScreenViewModel.MessageScreenState.Idle -> Unit
-//            MessageScreenViewModel.MessageScreenState.Loading -> MinimalDialog(
-//                "Uploading dot",
-//                true
-//            )
-//
-//            is MessageScreenViewModel.MessageScreenState.Error -> {
-//                MinimalDialog("Something went wrong. Please try again", false)
-//            }
-//
-//            MessageScreenViewModel.MessageScreenState.Success -> MinimalDialog(
-//                "Dot successfully uploaded",
-//                false
-//            ) {
-//                navController.navigateUp()
-//            }
-//        }
+        when (state) {
+            MessageScreenViewModel.MessageScreenState.Idle -> Unit
+            MessageScreenViewModel.MessageScreenState.Loading -> LoadingDialog()
+
+            is MessageScreenViewModel.MessageScreenState.Error -> {
+                ThemedDialog(state.error) {
+                    resetState()
+                }
+            }
+
+            MessageScreenViewModel.MessageScreenState.Success -> {
+                ThemedDialog("Dot successfully uploaded") {
+                    resetState()
+                    onNavigateUp()
+                }
+            }
+        }
     }
+}
+
+@Preview
+@Composable
+fun MessageScreenContentPreview() {
+    MessageScreenContent(
+        state = MessageScreenViewModel.MessageScreenState.Idle,
+        onNavigateUp = { },
+        onSendClick = { },
+        resetState = { }
+    )
 }

@@ -5,103 +5,111 @@
 //  Created by Surik Simonyan on 05.06.25.
 //  Copyright © 2025 orgName. All rights reserved.
 //
+
 import SwiftUI
 import LocDotsShared
 
 struct HomeView: View {
-    let onNavigateToMessageScreen: () -> Void
     @StateObject private var viewModel = HomeViewModel()
     @State private var showBottomSheet = false
     @State private var showingErrorAlert = false
     @State private var errorMessage: String = ""
-
+    
     var body: some View {
         NavigationView {
             ZStack {
-                Color(hex: ColorsKt.GrayHex)
+                Color(UIColorKt.Gray)
+                    .ignoresSafeArea()
 
-                VStack {
-                    switch viewModel.dots {
-                    case .idle:
-                        Spacer()
-                    case .loading:
-                        ProgressView("Loading...")
-                            .progressViewStyle(CircularProgressViewStyle(tint: Color(hex: ColorsKt.PlatinumHex)))
-                            .scaleEffect(1.5)
-                            .foregroundColor(Color(hex: ColorsKt.PlatinumHex))
-                        Spacer()
-                    case .error(let message):
-                        Spacer()
-                        Text(message)
-                            .foregroundColor(Color(hex: ColorsKt.PlatinumHex))
-                            .padding()
-                            .background(Color(hex: ColorsKt.EerieBlackHex).opacity(0.8))
-                            .cornerRadius(10)
-                            .onAppear {
-                                errorMessage = message
-                                showingErrorAlert = true
-                            }
-                        Spacer()
-                    case .success(let items):
-                        if items.isEmpty {
-                            EmptyStateContent(onCreateDot: onNavigateToMessageScreen)
-                        } else {
-                            List {
-                                ForEach(items) { item in
-                                    MessageCard(dot: item)
-                                        .listRowBackground(Color(hex: ColorsKt.GrayHex))
+                VStack(spacing: 0) {
+                    VStack {
+                        switch viewModel.dots {
+                        case .idle:
+                            Spacer()
+                            Text("Idle state. Pull to refresh or select sort options.")
+                                .foregroundColor(Color(UIColorKt.Platinum))
+                            Spacer()
+                        case .loading:
+                            Spacer()
+                            ProgressView("Loading...")
+                                .progressViewStyle(CircularProgressViewStyle(tint: Color(UIColorKt.Platinum)))
+                                .scaleEffect(1.5)
+                                .foregroundColor(Color(UIColorKt.Platinum))
+                            Spacer()
+                        case .error(let message):
+                            Spacer()
+                            Text(message)
+                                .foregroundColor(Color(UIColorKt.Platinum))
+                                .padding()
+                                .background(Color(UIColorKt.EerieBlack).opacity(0.8))
+                                .cornerRadius(10)
+                                .onAppear {
+                                    errorMessage = message
+                                    showingErrorAlert = true
+                                }
+                            Spacer()
+                        case .success(let items):
+                            if items.isEmpty {
+                                Spacer()
+                                Text("No dots found. Create one?")
+                                    .foregroundColor(Color(UIColorKt.Platinum))
+                                Spacer()
+                            } else {
+                                List {
+                                    ForEach(items) { item in
+                                        MessageCard(dot: item)
+                                            .listRowBackground(Color(UIColorKt.Gray))
+                                            .listRowSeparator(.hidden) // Added to hide dividers
+                                    }
+                                }
+                                .listStyle(.plain)
+                                .refreshable {
+                                    viewModel.getItems()
                                 }
                             }
-                            .listStyle(.plain)
-                            .refreshable {
-                                viewModel.getItems()
-                            }
                         }
                     }
-                }
-                .alert("Error", isPresented: $showingErrorAlert) {
-                    Button("OK") { showingErrorAlert = false }
-                } message: {
-                    Text(errorMessage)
-                }
-            }
-            .navigationTitle("Locdots") // You can set a title here
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItem(placement: .navigationBarLeading) {
+                    .frame(maxWidth: .infinity, maxHeight: .infinity) // Content takes available space
+                    .alert("Error", isPresented: $showingErrorAlert) {
+                        Button("OK") { showingErrorAlert = false }
+                    } message: {
+                        Text(errorMessage)
+                    }
+
+                    // Custom Bottom Bar
                     HStack {
                         Button(action: { showBottomSheet = true }) {
-                            Image(systemName: "arrow.up.arrow.down.circle.fill")
-                                .font(.title2)
-                                .foregroundColor(Color(hex: ColorsKt.PlatinumHex))
+                            Image(systemName: "arrow.up.arrow.down")
+                                .foregroundColor(Color(UIColorKt.Platinum))
+                                .imageScale(.large)
                         }
-                        Button(action: { viewModel.getItems() }) {
-                            Image(systemName: "arrow.clockwise.circle.fill")
-                                .font(.title2)
-                                .foregroundColor(Color(hex: ColorsKt.PlatinumHex))
+                        
+                        Spacer()
+                        
+                        NavigationLink(destination: MessageView()) {
+                            Image(systemName: "pencil")
+                                .foregroundColor(Color(UIColorKt.Platinum))
+                                .imageScale(.large)
                         }
                     }
-                }
-                ToolbarItem(placement: .navigationBarTrailing) {
-                    Button(action: onNavigateToMessageScreen) {
-                        Image(systemName: "pencil.circle.fill")
-                            .font(.largeTitle)
-                            .foregroundColor(Color(hex: ColorsKt.EerieBlackHex))
-                            .background(Circle().fill(Color(hex: ColorsKt.PlatinumHex)).frame(width: 40, height: 40)) // Adjusted size for toolbar
-                    }
+                    .padding()
+                    .frame(maxWidth: .infinity)
+                    .background(Color(UIColorKt.EerieBlack))
                 }
             }
+            .navigationBarTitleDisplayMode(.inline)
         }
         .sheet(isPresented: $showBottomSheet) {
-            BottomSheetContent(selectedSortType: viewModel.sortType) { newSortType in
-                viewModel.sortType = newSortType
-                showBottomSheet = false
+            ZStack {
+                Color(UIColorKt.EerieBlack)
+                    .ignoresSafeArea()
+
+                BottomSheetContent(selectedSortType: $viewModel.sortType) {
+                    showBottomSheet = false
+                }
             }
-            .presentationDetents([.medium, .large])
-            .background(Color(hex: ColorsKt.EerieBlackHex))
-        }
-        .onAppear {
-            viewModel.getItems()
+            .presentationDetents([.fraction(0.25)])
+            .preferredColorScheme(.dark)
         }
     }
 }
