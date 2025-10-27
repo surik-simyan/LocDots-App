@@ -9,4 +9,5 @@ data class DotDto(
     val message: String,
     val coordinates: Coordinates,
     val dateTime: LocalDateTime,
+    val distance: Double,
 )

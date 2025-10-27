@@ -28,7 +28,7 @@ fun MessageCard(dot: Dot) {
         modifier = Modifier
             .heightIn(min = 100.dp)
             .fillMaxWidth()
-            .padding(16.dp)
+            .padding(16.dp),
     ) {
         Column {
             Text(
@@ -41,7 +41,7 @@ fun MessageCard(dot: Dot) {
 
             Row(
                 modifier = Modifier
-                    .padding(16.dp)
+                    .padding(16.dp),
             ) {
                 Text(
                     text = dot.formattedDate,
@@ -50,7 +50,7 @@ fun MessageCard(dot: Dot) {
                 )
                 Spacer(modifier = Modifier.weight(1f))
                 Text(
-                    text = "16 km",
+                    text = dot.formattedDistance,
                     color = Platinum,
                     textAlign = TextAlign.End,
                 )

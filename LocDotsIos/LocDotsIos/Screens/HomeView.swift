@@ -20,7 +20,7 @@ struct HomeView: View {
             ZStack {
                 Color(UIColorKt.Gray)
                     .ignoresSafeArea()
-
+                
                 VStack(spacing: 0) {
                     VStack {
                         switch viewModel.dots {
@@ -50,10 +50,28 @@ struct HomeView: View {
                             Spacer()
                         case .success(let items):
                             if items.isEmpty {
-                                Spacer()
-                                Text("No dots found. Create one?")
-                                    .foregroundColor(Color(UIColorKt.Platinum))
-                                Spacer()
+                                ScrollView {
+                                    VStack(spacing: 16) {
+                                        Spacer()
+                                        Text("No dots nearby, be the first one")
+                                            .foregroundColor(Color(UIColorKt.Platinum))
+                                        
+                                        NavigationLink(destination: MessageView()) {
+                                            Text("Create dot")
+                                                .foregroundColor(Color(UIColorKt.EerieBlack))
+                                                .padding(.horizontal, 20)
+                                                .padding(.vertical, 10)
+                                                .background(Color(UIColorKt.Platinum))
+                                                .cornerRadius(8)
+                                        }
+                                        .padding(.horizontal, 16)
+                                        Spacer()
+                                    }
+                                    .frame(maxWidth: .infinity, minHeight: UIScreen.main.bounds.height * 0.8)
+                                }
+                                .refreshable {
+                                    viewModel.getItems()
+                                }
                             } else {
                                 List {
                                     ForEach(items) { item in
@@ -75,7 +93,7 @@ struct HomeView: View {
                     } message: {
                         Text(errorMessage)
                     }
-
+                    
                     // Custom Bottom Bar
                     HStack {
                         Button(action: { showBottomSheet = true }) {
@@ -103,12 +121,14 @@ struct HomeView: View {
             ZStack {
                 Color(UIColorKt.EerieBlack)
                     .ignoresSafeArea()
-
+                
                 BottomSheetContent(selectedSortType: $viewModel.sortType) {
+                    viewModel.getItems()
                     showBottomSheet = false
                 }
             }
             .presentationDetents([.fraction(0.25)])
+            .presentationDragIndicator(.visible)
             .preferredColorScheme(.dark)
         }
     }

@@ -13,17 +13,14 @@ import surik.simyan.locdots.app.shared.domain.model.Dot
 import surik.simyan.locdots.app.shared.domain.usecases.GetAllDotsUseCase
 
 class HomeScreenViewModel(
-    private val getAllDots: GetAllDotsUseCase
+    private val getAllDots: GetAllDotsUseCase,
 ) : ViewModel() {
 
     private val _homeScreenState: MutableStateFlow<HomeScreenState> =
         MutableStateFlow(HomeScreenState.Idle)
     val homeScreenState = _homeScreenState.asStateFlow()
 
-    //
-//    private val geolocator: Geolocator = Geolocator.mobile()
-//
-    val sortType = MutableStateFlow(DotSort.PostDate)
+    val sortingType = MutableStateFlow(DotSort.PostDate)
 
     init {
         getItems()
@@ -39,41 +36,13 @@ class HomeScreenViewModel(
     fun getItems() {
         viewModelScope.launch {
             _homeScreenState.update { HomeScreenState.Loading }
-            getAllDots.invoke(40.741895, -73.989308, sortType.value)
+            getAllDots.invoke(sortingType.value)
                 .onSuccess { dots ->
                     _homeScreenState.update { HomeScreenState.Success(dots) }
                 }
                 .onFailure { error ->
                     _homeScreenState.update { HomeScreenState.Error(error.message) }
                 }
-//            when (val location = geolocator.current(Priority.HighAccuracy)) {
-//                is GeolocatorResult.Success -> {
-//                    try {
-//                        _dots.update {
-//                            HomeScreenState.Success(
-//                                dotsApi.getAllDots(
-//                                    location.data.coordinates.latitude,
-//                                    location.data.coordinates.longitude,
-//                                    sortType.value
-//                                )
-//                            )
-//                        }
-//                    } catch (e: Exception) {
-//                        Logger.e(e.message.toString(), e)
-//                        _dots.update { HomeScreenState.Error(e.toString()) }
-//                    }
-//                }
-//
-//                is GeolocatorResult.PermissionError -> {
-//                    Logger.e("PermissionError")
-//                    _dots.update { HomeScreenState.Error("Please grant location permission") }
-//                }
-//
-//                else -> {
-//                    Logger.e(location.toString())
-//                    _dots.update { HomeScreenState.Error("Something went wrong") }
-//                }
-//            }
         }
     }
 

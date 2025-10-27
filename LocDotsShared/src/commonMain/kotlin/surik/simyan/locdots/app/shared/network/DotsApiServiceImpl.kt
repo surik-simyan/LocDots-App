@@ -15,17 +15,15 @@ import surik.simyan.locdots.app.shared.data.DotSort
 class DotsApiServiceImpl(private val client: HttpClient) : DotsApiService {
 
     override suspend fun getAllDots(
-        latitude: Double,
-        longitude: Double,
-        sortingType: DotSort
-    ): ApiResponse<List<DotDto>> {
-        return safeApiCallResponse<List<DotDto>> {
-            client.get("${BuildKonfig.API_URL}/dots") {
-                url {
-                    parameters.append("latitude", latitude.toString())
-                    parameters.append("longitude", longitude.toString())
-                    // parameters.append("sortingType", sortingType.value)
-                }
+        latitude: Double?,
+        longitude: Double?,
+        sortingType: DotSort,
+    ): ApiResponse<List<DotDto>> = safeApiCallResponse<List<DotDto>> {
+        client.get("${BuildKonfig.API_URL}/dots") {
+            url {
+                parameters.append("latitude", latitude.toString())
+                parameters.append("longitude", longitude.toString())
+                // parameters.append("sortingType", sortingType.value)
             }
         }
     }
@@ -33,20 +31,18 @@ class DotsApiServiceImpl(private val client: HttpClient) : DotsApiService {
     override suspend fun createDot(
         userId: String,
         message: String,
-        latitude: Double,
-        longitude: Double
-    ): ApiResponse<Unit> {
-        return safeApiCallResponse {
-            client.post("${BuildKonfig.API_URL}/dots") {
-                contentType(ContentType.Application.Json)
-                setBody(
-                    CreateDotBody(
-                        userId = userId,
-                        message = message,
-                        coordinates = Coordinates(latitude, longitude)
-                    )
-                )
-            }
+        latitude: Double?,
+        longitude: Double?,
+    ): ApiResponse<Unit> = safeApiCallResponse {
+        client.post("${BuildKonfig.API_URL}/dots") {
+            contentType(ContentType.Application.Json)
+            setBody(
+                CreateDotBody(
+                    userId = userId,
+                    message = message,
+                    coordinates = Coordinates(latitude, longitude),
+                ),
+            )
         }
     }
 }

@@ -8,8 +8,7 @@ sealed class MultiplatformResult<out T> {
     data class Success<T>(val data: T) : MultiplatformResult<T>()
 
     @Serializable
-    data class Error(val message: String, val cause: String? = null) :
-        MultiplatformResult<Nothing>()
+    data class Error(val message: String, val cause: String? = null) : MultiplatformResult<Nothing>()
 }
 
 inline fun <T> MultiplatformResult<T>.onSuccess(action: (T) -> Unit): MultiplatformResult<T> {

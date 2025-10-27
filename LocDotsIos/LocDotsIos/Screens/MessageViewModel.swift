@@ -16,16 +16,6 @@ class MessageViewModel: ObservableObject {
         case loading
         case error(String)
         case success
-
-        static func == (lhs: MessageViewModel.MessageScreenState, rhs: MessageViewModel.MessageScreenState) -> Bool {
-            switch (lhs, rhs) {
-            case (.idle, .idle): return true
-            case (.loading, .loading): return true
-            case (.error(let lMessage), .error(let rMessage)): return lMessage == rMessage
-            case (.success, .success): return true
-            default: return false
-            }
-        }
     }
 
     @Published var dot: MessageScreenState = .idle
@@ -43,11 +33,7 @@ class MessageViewModel: ObservableObject {
         
         uploadTask = Task {
             do {
-                let result = try await createDotUseCase.invoke(
-                    message: message,
-                    latitude: 40.741895,
-                    longitude: -73.989308,
-                )
+                let result = try await createDotUseCase.invoke(message: message)
                 
                 result
                     .onSuccess { data in

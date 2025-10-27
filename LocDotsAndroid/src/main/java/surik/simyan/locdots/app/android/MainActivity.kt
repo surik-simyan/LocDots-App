@@ -9,7 +9,9 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import surik.simyan.locdots.app.android.ui.screens.HomeScreen
+import surik.simyan.locdots.app.android.ui.screens.HomeScreenRoute
 import surik.simyan.locdots.app.android.ui.screens.MessageScreen
+import surik.simyan.locdots.app.android.ui.screens.MessageScreenRoute
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -20,20 +22,20 @@ class MainActivity : ComponentActivity() {
                 val navController = rememberNavController()
                 NavHost(
                     navController = navController,
-                    startDestination = "home",
+                    startDestination = HomeScreenRoute,
                 ) {
-                    composable("home") {
+                    composable<HomeScreenRoute> {
                         HomeScreen(
                             onNavigateToMessageScreen = {
-                                navController.navigate("message")
-                            }
+                                navController.navigate(MessageScreenRoute)
+                            },
                         )
                     }
-                    composable("message") {
+                    composable<MessageScreenRoute> {
                         MessageScreen(
                             onNavigateUp = {
                                 navController.navigateUp()
-                            }
+                            },
                         )
                     }
                 }

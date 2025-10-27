@@ -2,11 +2,11 @@ package surik.simyan.locdots.app.shared.ui
 
 import platform.UIKit.UIColor
 
-val DavyGray = fromHexToColor(DavyGrayHex)
-val Platinum = fromHexToColor(PlatinumHex)
-val Gray = fromHexToColor(GrayHex)
-val EerieBlack = fromHexToColor(EerieBlackHex)
-val Jet = fromHexToColor(JetHex)
+val DavyGray = fromHexToColor(DAVY_GRAY_HEX)
+val Platinum = fromHexToColor(PLATINUM_HEX)
+val Gray = fromHexToColor(GRAY_HEX)
+val EerieBlack = fromHexToColor(EERIE_BLACK_HEX)
+val Jet = fromHexToColor(JET_HEX)
 
 fun fromHexToColor(hex: Long): UIColor {
     val red = ((hex shr 16) and 0xFF) / 255.0
@@ -18,6 +18,6 @@ fun fromHexToColor(hex: Long): UIColor {
         red = red,
         green = green,
         blue = blue,
-        alpha = alpha
+        alpha = alpha,
     )
 }

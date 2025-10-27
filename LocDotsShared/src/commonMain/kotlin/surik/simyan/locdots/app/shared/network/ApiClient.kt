@@ -13,11 +13,13 @@ import io.ktor.client.plugins.logging.Logger as KtorLogger
 
 val client = HttpClient {
     install(ContentNegotiation) {
-        json(Json {
-            prettyPrint = true
-            isLenient = true
-            ignoreUnknownKeys = true
-        })
+        json(
+            Json {
+                prettyPrint = true
+                isLenient = true
+                ignoreUnknownKeys = true
+            },
+        )
     }
     install(Logging) {
         logger = object : KtorLogger {
@@ -30,7 +32,7 @@ val client = HttpClient {
 }
 
 suspend inline fun <reified T> safeApiCallResponse(
-    crossinline block: suspend () -> HttpResponse
+    crossinline block: suspend () -> HttpResponse,
 ): ApiResponse<T> {
     val response = block()
     val bodyString = response.bodyAsText()

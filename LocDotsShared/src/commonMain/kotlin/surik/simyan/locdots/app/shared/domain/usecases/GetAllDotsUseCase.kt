@@ -6,8 +6,6 @@ import surik.simyan.locdots.app.shared.domain.model.Dot
 
 interface GetAllDotsUseCase {
     suspend operator fun invoke(
-        latitude: Double,
-        longitude: Double,
-        sortingType: DotSort
+        sortingType: DotSort,
     ): MultiplatformResult<List<Dot>>
 }

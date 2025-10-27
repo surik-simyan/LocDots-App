@@ -14,6 +14,14 @@ struct BottomSheetContent: View {
     var onApply: () -> Void
     let sortOptions: [DotSort] = [.postDistance, .postDate]
     
+    @State private var temporarySelectedSortType: DotSort
+
+    init(selectedSortType: Binding<DotSort>, onApply: @escaping () -> Void) {
+        self._selectedSortType = selectedSortType
+        self.onApply = onApply
+        self._temporarySelectedSortType = State(initialValue: selectedSortType.wrappedValue)
+    }
+    
     var body: some View {
         VStack(spacing: 16) {
             Text("Sort by")
@@ -22,7 +30,7 @@ struct BottomSheetContent: View {
                 .frame(maxWidth: .infinity, alignment: .center)
                 .padding(.vertical, 8)
             
-            Picker("Sort Options", selection: $selectedSortType) {
+            Picker("Sort Options", selection: $temporarySelectedSortType) {
                 ForEach(sortOptions, id: \.self) { option in
                     Text(option.value)
                         .tag(option)
@@ -33,6 +41,7 @@ struct BottomSheetContent: View {
             
         
             Button(action: {
+                selectedSortType = temporarySelectedSortType
                 onApply()
             }) {
                 Text("Apply")

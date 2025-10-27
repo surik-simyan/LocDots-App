@@ -14,7 +14,7 @@ import androidx.compose.material3.SingleChoiceSegmentedButtonRow
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
@@ -30,13 +30,15 @@ import surik.simyan.locdots.app.shared.ui.Jet
 import surik.simyan.locdots.app.shared.ui.Platinum
 
 @Composable
-fun BottomSheetContent(clickHandler: (DotSort) -> Unit) {
-    var selectedIndex by remember { mutableIntStateOf(0) }
-    val options = listOf(
-        DotSort.PostDistance, DotSort.PostDate
-    )
+fun BottomSheetContent(
+    selectedSort: DotSort,
+    onApply: (DotSort) -> Unit,
+) {
+    var temporarySelectedSort by remember { mutableStateOf(selectedSort) }
+    val options = remember { listOf(DotSort.PostDistance, DotSort.PostDate) }
+
     Column(
-        modifier = Modifier.padding(PaddingValues(16.dp, 0.dp, 16.dp, 16.dp))
+        modifier = Modifier.padding(PaddingValues(16.dp, 0.dp, 16.dp, 16.dp)),
     ) {
         Text(
             "Sort by",
@@ -45,25 +47,25 @@ fun BottomSheetContent(clickHandler: (DotSort) -> Unit) {
             color = Platinum,
             textAlign = TextAlign.Center,
             fontSize = 24.sp,
-            fontWeight = FontWeight.Bold
+            fontWeight = FontWeight.Bold,
         )
         Spacer(modifier = Modifier.height(8.dp))
         SingleChoiceSegmentedButtonRow(
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
         ) {
             options.forEachIndexed { index, option ->
                 SegmentedButton(
                     shape = SegmentedButtonDefaults.itemShape(index = index, count = options.size),
-                    onClick = { selectedIndex = index },
-                    selected = index == selectedIndex,
+                    onClick = { temporarySelectedSort = option },
+                    selected = option == temporarySelectedSort,
                     colors = SegmentedButtonDefaults.colors(
                         activeContainerColor = Jet,
                         activeContentColor = Platinum,
                         activeBorderColor = Color.Transparent,
                         inactiveContainerColor = Gray,
                         inactiveContentColor = Platinum,
-                        inactiveBorderColor = Color.Transparent
-                    )
+                        inactiveBorderColor = Color.Transparent,
+                    ),
                 ) {
                     Text(option.value)
                 }
@@ -71,10 +73,10 @@ fun BottomSheetContent(clickHandler: (DotSort) -> Unit) {
         }
         Spacer(modifier = Modifier.height(8.dp))
         Button(
-            onClick = { clickHandler(options[selectedIndex]) },
+            onClick = { onApply(temporarySelectedSort) },
             colors = ButtonDefaults.buttonColors(
-                containerColor = Platinum
-            )
+                containerColor = Platinum,
+            ),
         ) {
             Text(
                 "Apply",
@@ -82,7 +84,7 @@ fun BottomSheetContent(clickHandler: (DotSort) -> Unit) {
                     .fillMaxWidth(),
                 color = EerieBlack,
                 textAlign = TextAlign.Center,
-                fontWeight = FontWeight.Bold
+                fontWeight = FontWeight.Bold,
             )
         }
     }

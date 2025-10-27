@@ -31,7 +31,7 @@ struct MessageCard: View {
                 
                 Spacer()
                 
-                Text("16 km")
+                Text(dot.formattedDistance)
                     .foregroundColor(Color(UIColorKt.Platinum))
                     .multilineTextAlignment(.trailing)
                     .frame(maxWidth: .infinity, alignment: .trailing)
@@ -46,7 +46,3 @@ struct MessageCard: View {
         )
     }
 }
-
-//#Preview {
-//    MessageCard(dot: <#T##LocDotsShared.Dot#>)
-//}

@@ -1,3 +1,4 @@
+
 //
 //  HomeViewModel.swift
 //  LocDotsIos
@@ -17,16 +18,6 @@ class HomeViewModel: ObservableObject {
         case loading
         case error(String)
         case success([Dot])
-
-        static func == (lhs: HomeScreenState, rhs: HomeScreenState) -> Bool {
-            switch (lhs, rhs) {
-            case (.idle, .idle): return true
-            case (.loading, .loading): return true
-            case (.error(let lMessage), .error(let rMessage)): return lMessage == rMessage
-            case (.success(let lDots), .success(let rDots)): return lDots == rDots
-            default: return false
-            }
-        }
     }
 
     @Published var dots: HomeScreenState = .idle
@@ -40,11 +31,6 @@ class HomeViewModel: ObservableObject {
     }
 
     init() {
-        $sortType
-            .dropFirst()
-            .sink { [weak self] _ in self?.getItems() }
-            .store(in: &cancellables)
-        
         getItems()
     }
 
@@ -54,11 +40,7 @@ class HomeViewModel: ObservableObject {
         
         fetchTask = Task {
             do {
-                let result = try await getAllDotsUseCase.invoke(
-                    latitude: 40.741895,
-                    longitude: -73.989308,
-                    sortingType: sortType
-                )
+                let result = try await getAllDotsUseCase.invoke(sortingType: sortType)
                 
                 result
                     .onSuccess { data in
